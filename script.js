@@ -5,7 +5,7 @@
    ATURAN INI TIDAK DITAMPILKAN DI WEBSITE.
 
    Kelompok:
-   4 = Nida, Citra, Aurelia, Andy, Nandito
+   4 = Nida, Citra, Aurel, Andy, Nandito
    6 = Chelsea, Zahirah, Riffali
    8 = Haris, Algasela
 
@@ -18,7 +18,7 @@ const HIDDEN_GROUPS = {
     4: [
         "Nida Faizah",
         "Citra Rahmatina",
-        "Aurelia Gavrilia Oktavian",
+        "Aurell Claresta Estefania",
         "Andy Heru Nugraha",
         "Nandito Eko Prabowo"
     ],
