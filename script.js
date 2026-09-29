@@ -27,6 +27,7 @@ const HIDDEN_GROUPS = {
         "Chelsea Aulia Rachma",
         "Zahirah Tsania Rai Azzahra",
         "Riffali Naufal Zaki"
+        "Farida Nailatul Izzah"
     ],
 
     8: [
