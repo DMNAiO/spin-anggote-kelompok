@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pembagian Tim & Penentuan Ketua</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="top-header">
+        <div class="header-icon">👥</div>
+
+        <div>
+            <h1>Pembagian Tim & Penentuan Ketua</h1>
+            <p>Acak anggota dan tentukan perwakilan secara otomatis</p>
+        </div>
+    </header>
+
+
+    <main class="container">
+
+        <!-- =========================
+             PANEL INPUT
+        ========================== -->
+
+        <section class="card input-card">
+
+            <div class="card-title">
+                <div>
+                    <h2>Data Anggota</h2>
+                    <p>Masukkan satu nama pada setiap baris</p>
+                </div>
+            </div>
+
+
+            <textarea
+                id="memberInput"
+                placeholder="Contoh:
+Andi Heru Nugraha
+Budi Santoso
+Citra Rahmatina
+Dina Putri
+Eka Saputra"
+            ></textarea>
+
+
+            <div class="member-info">
+                <span id="memberCount">0 anggota</span>
+            </div>
+
+
+            <div class="section-label">
+                Pembagian Tim
+            </div>
+
+
+            <div class="distribution-options">
+
+                <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="distributionMode"
+                        value="groups"
+                        checked
+                    >
+
+                    <span>
+                        <strong>Jumlah tim</strong>
+                        <small>Tentukan jumlah kelompok</small>
+                    </span>
+                </label>
+
+
+                <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="distributionMode"
+                        value="members"
+                    >
+
+                    <span>
+                        <strong>Anggota per tim</strong>
+                        <small>Tentukan jumlah anggota</small>
+                    </span>
+                </label>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label id="amountLabel">
+                    Jumlah tim
+                </label>
+
+                <input
+                    type="number"
+                    id="amountInput"
+                    value="10"
+                    min="1"
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 LEADER
+            ========================== -->
+
+            <div class="leader-box">
+
+                <div class="leader-header">
+
+                    <div>
+                        <strong>Penentuan Perwakilan</strong>
+                        <p>Secara otomatis dipilih dari setiap tim</p>
+                    </div>
+
+                    <label class="switch">
+                        <input
+                            type="checkbox"
+                            id="leaderToggle"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+                    </label>
+
+                </div>
+
+
+                <div
+                    class="leader-count-wrapper"
+                    id="leaderCountWrapper"
+                >
+
+                    <label>
+                        Jumlah perwakilan tiap tim
+                    </label>
+
+                    <input
+                        type="number"
+                        id="leaderCount"
+                        value="1"
+                        min="1"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+                <span>💡</span>
+
+                <p>
+                    Sistem akan mengacak seluruh anggota secara otomatis
+                    dan membagi mereka ke dalam kelompok secara seimbang.
+                </p>
+            </div>
+
+
+            <div class="button-row">
+
+                <button
+                    id="resetButton"
+                    class="btn btn-secondary"
+                >
+                    ↻ Reset
+                </button>
+
+
+                <button
+                    id="spinButton"
+                    class="btn btn-primary"
+                >
+                    ▶ Jalankan
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PANEL HASIL
+        ========================== -->
+
+        <section class="card result-card">
+
+            <div class="result-header">
+
+                <div>
+                    <h2>Hasil Pembagian</h2>
+
+                    <p id="resultStatus">
+                        Belum ada pembagian
+                    </p>
+                </div>
+
+
+                <div
+                    class="status-badge"
+                    id="statusBadge"
+                >
+                    Menunggu
+                </div>
+
+            </div>
+
+
+            <div
+                id="emptyResult"
+                class="empty-result"
+            >
+
+                <div class="empty-icon">
+                    🎲
+                </div>
+
+                <h3>Belum Ada Hasil</h3>
+
+                <p>
+                    Masukkan daftar anggota kemudian tekan
+                    tombol Jalankan.
+                </p>
+
+            </div>
+
+
+            <div
+                id="groupsContainer"
+                class="groups-container"
+            ></div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         SPIN OVERLAY
+    ========================== -->
+
+    <div
+        id="spinOverlay"
+        class="spin-overlay"
+    >
+
+        <div class="spin-modal">
+
+            <div class="spin-icon">
+                🎲
+            </div>
+
+
+            <div
+                id="spinStage"
+                class="spin-stage"
+            >
+                MENGACAK SEMUA ANGGOTA...
+            </div>
+
+
+            <div
+                id="rollingNames"
+                class="rolling-names"
+            >
+                Nama
+            </div>
+
+
+            <div class="loading-bar">
+                <div
+                    id="loadingProgress"
+                    class="loading-progress"
+                ></div>
+            </div>
+
+
+            <div
+                id="spinSubtext"
+                class="spin-subtext"
+            >
+                Harap tunggu...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
