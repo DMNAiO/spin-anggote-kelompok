@@ -1,14 +1,15 @@
 /* =========================================================
-   PENGATURAN RAHASIA
-   =========================================================
+   KONFIGURASI RAHASIA
+=========================================================
 
-   Kelompok tertentu sudah ditentukan sebelumnya.
+   ATURAN INI TIDAK DITAMPILKAN DI WEBSITE.
 
-   Jangan ditampilkan di HTML.
-   Jangan ditampilkan di halaman.
-   Hanya digunakan oleh sistem ketika melakukan pengacakan.
+   Kelompok:
+   4 = Nida, Citra, Aurelia, Andy, Nandito
+   6 = Chelsea, Zahirah, Riffali
+   8 = Haris, Algasela
 
-   Nomor kelompok mengikuti nomor yang ditulis di sini.
+   Anggota lain tetap diacak.
 ========================================================= */
 
 
@@ -37,7 +38,7 @@ const HIDDEN_GROUPS = {
 
 
 /* =========================================================
-   ELEMENT HTML
+   ELEMENT
 ========================================================= */
 
 
@@ -113,6 +114,222 @@ const loadingProgress =
     document.getElementById("loadingProgress");
 
 
+const exportActions =
+    document.getElementById("exportActions");
+
+
+const copyButton =
+    document.getElementById("copyButton");
+
+
+const exportButton =
+    document.getElementById("exportButton");
+
+
+/* =========================================================
+   SOUND ENGINE
+   Tidak membutuhkan file MP3/WAV.
+   Jadi tetap bisa digunakan secara offline.
+========================================================= */
+
+
+let audioContext = null;
+
+
+function initAudio() {
+
+    if (!audioContext) {
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        if (!AudioContext) {
+
+            return null;
+
+        }
+
+        audioContext =
+            new AudioContext();
+
+    }
+
+
+    if (
+        audioContext.state ===
+        "suspended"
+    ) {
+
+        audioContext.resume();
+
+    }
+
+
+    return audioContext;
+
+}
+
+
+/* Suara satu beep */
+
+function playTone(
+    frequency,
+    duration,
+    type = "sine",
+    volume = 0.045,
+    delay = 0
+) {
+
+    const ctx =
+        initAudio();
+
+
+    if (!ctx) {
+
+        return;
+
+    }
+
+
+    const oscillator =
+        ctx.createOscillator();
+
+
+    const gain =
+        ctx.createGain();
+
+
+    oscillator.type =
+        type;
+
+
+    oscillator.frequency.setValueAtTime(
+        frequency,
+        ctx.currentTime + delay
+    );
+
+
+    gain.gain.setValueAtTime(
+        0.0001,
+        ctx.currentTime + delay
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+        volume,
+        ctx.currentTime + delay + 0.01
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        ctx.currentTime +
+            delay +
+            duration
+    );
+
+
+    oscillator.connect(gain);
+
+    gain.connect(ctx.destination);
+
+
+    oscillator.start(
+        ctx.currentTime + delay
+    );
+
+
+    oscillator.stop(
+        ctx.currentTime +
+            delay +
+            duration +
+            0.02
+    );
+
+}
+
+
+/* Suara ketika nama sedang berputar */
+
+function playRollSound() {
+
+    playTone(
+        260 + Math.random() * 180,
+        0.055,
+        "square",
+        0.025
+    );
+
+}
+
+
+/* Suara ketika tim ditentukan */
+
+function playTeamSound() {
+
+    playTone(
+        520,
+        0.09,
+        "sine",
+        0.05
+    );
+
+    playTone(
+        680,
+        0.12,
+        "sine",
+        0.05,
+        0.08
+    );
+
+}
+
+
+/* Suara selesai */
+
+function playCompleteSound() {
+
+    playTone(
+        523.25,
+        0.14,
+        "sine",
+        0.06
+    );
+
+    playTone(
+        659.25,
+        0.14,
+        "sine",
+        0.06,
+        0.12
+    );
+
+    playTone(
+        783.99,
+        0.22,
+        "sine",
+        0.07,
+        0.24
+    );
+
+}
+
+
+/* Suara klik */
+
+function playClickSound() {
+
+    playTone(
+        500,
+        0.06,
+        "sine",
+        0.03
+    );
+
+}
+
+
 /* =========================================================
    UTILITAS
 ========================================================= */
@@ -120,18 +337,24 @@ const loadingProgress =
 
 function sleep(ms) {
 
-    return new Promise(resolve => {
-        setTimeout(resolve, ms);
-    });
+    return new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                ms
+            )
+    );
 
 }
 
 
-/* Fisher-Yates Shuffle */
+/* Fisher-Yates */
 
 function shuffle(array) {
 
-    const result = [...array];
+    const result =
+        [...array];
+
 
     for (
         let i = result.length - 1;
@@ -140,7 +363,11 @@ function shuffle(array) {
     ) {
 
         const j =
-            Math.floor(Math.random() * (i + 1));
+            Math.floor(
+                Math.random() *
+                (i + 1)
+            );
+
 
         [
             result[i],
@@ -153,12 +380,16 @@ function shuffle(array) {
 
     }
 
+
     return result;
 
 }
 
 
-/* Ambil nama dari textarea */
+/* =========================================================
+   NAMA
+========================================================= */
+
 
 function getNames() {
 
@@ -166,9 +397,15 @@ function getNames() {
 
         .split("\n")
 
-        .map(name => name.trim())
+        .map(
+            name =>
+                name.trim()
+        )
 
-        .filter(name => name.length > 0)
+        .filter(
+            name =>
+                name.length > 0
+        )
 
         .filter(
             (name, index, array) =>
@@ -178,14 +415,11 @@ function getNames() {
 }
 
 
-/* =========================================================
-   JUMLAH ANGGOTA
-========================================================= */
-
-
 function updateMemberCount() {
 
-    const names = getNames();
+    const names =
+        getNames();
+
 
     memberCount.textContent =
         `${names.length} anggota`;
@@ -208,14 +442,16 @@ document
     .querySelectorAll(
         'input[name="distributionMode"]'
     )
-    .forEach(radio => {
+    .forEach(
+        radio => {
 
-        radio.addEventListener(
-            "change",
-            updateDistributionLabel
-        );
+            radio.addEventListener(
+                "change",
+                updateDistributionLabel
+            );
 
-    });
+        }
+    );
 
 
 function updateDistributionLabel() {
@@ -260,11 +496,13 @@ leaderToggle.addEventListener(
 
 
 /* =========================================================
-   HITUNG JUMLAH TIM
+   JUMLAH TIM
 ========================================================= */
 
 
-function calculateGroupCount(totalMembers) {
+function calculateGroupCount(
+    totalMembers
+) {
 
     const mode =
         document.querySelector(
@@ -307,24 +545,35 @@ function calculateGroupCount(totalMembers) {
 
 
 /* =========================================================
-   CEK HIDDEN GROUP
+   HIDDEN MEMBERS
 ========================================================= */
 
 
 function getHiddenMembers() {
 
-    const result = new Set();
+    const result =
+        new Set();
 
-    Object.values(HIDDEN_GROUPS)
-        .forEach(group => {
 
-            group.forEach(name => {
+    Object.values(
+        HIDDEN_GROUPS
+    )
+        .forEach(
+            group => {
 
-                result.add(name);
+                group.forEach(
+                    name => {
 
-            });
+                        result.add(
+                            name
+                        );
 
-        });
+                    }
+                );
+
+            }
+        );
+
 
     return result;
 
@@ -332,7 +581,7 @@ function getHiddenMembers() {
 
 
 /* =========================================================
-   MEMBUAT KELOMPOK
+   CREATE GROUP
 ========================================================= */
 
 
@@ -351,109 +600,79 @@ function createGroups(names) {
     }
 
 
-    /*
-       Buat array kelompok.
-       Contoh 10 kelompok:
-
-       [
-         { number: 1, members: [] },
-         { number: 2, members: [] },
-         ...
-         { number: 10, members: [] }
-       ]
-    */
-
     const groups =
         Array.from(
-            { length: groupCount },
+            {
+                length:
+                    groupCount
+            },
             (_, index) => ({
-                number: index + 1,
-                members: []
+
+                number:
+                    index + 1,
+
+                members:
+                    []
+
             })
         );
 
 
     /*
-       Tentukan ukuran target tiap kelompok.
-
-       Contoh:
-       37 orang / 10 kelompok
-
-       Hasil:
-       4,4,4,4,4,4,3,3,3,3
+       Hitung target anggota.
     */
 
     const baseSize =
         Math.floor(
-            names.length / groupCount
+            names.length /
+            groupCount
         );
 
 
     let extra =
-        names.length % groupCount;
+        names.length %
+        groupCount;
 
 
     const targetSizes =
-        groups.map(() => {
+        groups.map(
+            () => {
 
-            if (extra > 0) {
+                if (extra > 0) {
 
-                extra--;
+                    extra--;
 
-                return baseSize + 1;
+                    return baseSize + 1;
+
+                }
+
+                return baseSize;
 
             }
+        );
 
-            return baseSize;
-
-        });
-
-
-    /*
-       Cari nama yang termasuk kelompok rahasia.
-    */
-
-    const hiddenMembers =
-        getHiddenMembers();
-
-
-    /*
-       Validasi agar nama hidden memang ada
-       di daftar anggota.
-    */
 
     const nameSet =
         new Set(names);
 
-
-    /*
-       Anggota yang benar-benar tersedia
-       untuk dimasukkan ke kelompok rahasia.
-    */
 
     const assignedHidden =
         new Set();
 
 
     /*
-       Masukkan kelompok rahasia ke nomor
-       yang sudah ditentukan.
+       Masukkan kelompok rahasia.
     */
 
-    Object.entries(HIDDEN_GROUPS)
+    Object.entries(
+        HIDDEN_GROUPS
+    )
         .forEach(
             ([groupNumber, hiddenNames]) => {
 
                 const number =
                     Number(groupNumber);
 
-
-                /*
-                   Kalau jumlah tim kurang dari
-                   nomor kelompok rahasia,
-                   kelompok tersebut tidak bisa
-                   digunakan.
-                */
 
                 if (
                     number < 1 ||
@@ -466,80 +685,72 @@ function createGroups(names) {
 
 
                 const targetGroup =
-                    groups[number - 1];
+                    groups[
+                        number - 1
+                    ];
 
 
-                /*
-                   Hanya ambil nama yang memang
-                   ada di daftar input.
-                */
-
-                const availableNames =
-                    hiddenNames.filter(
+                hiddenNames
+                    .filter(
                         name =>
                             nameSet.has(name)
+                    )
+                    .forEach(
+                        name => {
+
+                            if (
+                                !assignedHidden.has(
+                                    name
+                                )
+                            ) {
+
+                                targetGroup.members
+                                    .push(name);
+
+
+                                assignedHidden.add(
+                                    name
+                                );
+
+                            }
+
+                        }
                     );
-
-
-                /*
-                   Tambahkan nama yang sudah
-                   ditentukan.
-                */
-
-                availableNames.forEach(name => {
-
-                    /*
-                       Jangan masukkan nama dua kali.
-                    */
-
-                    if (
-                        !assignedHidden.has(name)
-                    ) {
-
-                        targetGroup.members.push(name);
-
-                        assignedHidden.add(name);
-
-                    }
-
-                });
 
             }
         );
 
 
     /*
-       Ambil anggota yang belum ditentukan.
+       Sisa anggota.
     */
 
     let remaining =
         names.filter(
             name =>
-                !assignedHidden.has(name)
+                !assignedHidden.has(
+                    name
+                )
         );
 
 
     /*
-       Acak anggota yang belum ditentukan.
+       Acak sisa anggota.
     */
 
     remaining =
-        shuffle(remaining);
+        shuffle(
+            remaining
+        );
 
 
     /*
-       Masukkan anggota biasa ke kelompok
-       yang masih punya slot.
-
-       Kelompok rahasia tetap utuh.
+       Distribusi seimbang.
     */
 
-    for (const name of remaining) {
-
-        /*
-           Cari kelompok dengan jumlah anggota
-           paling sedikit dan masih memiliki slot.
-        */
+    for (
+        const name of remaining
+    ) {
 
         const availableGroups =
             groups.filter(
@@ -549,12 +760,9 @@ function createGroups(names) {
             );
 
 
-        if (availableGroups.length === 0) {
-
-            /*
-               Pengaman kalau ada kondisi
-               pembagian yang tidak terduga.
-            */
+        if (
+            availableGroups.length === 0
+        ) {
 
             const smallest =
                 [...groups]
@@ -564,16 +772,16 @@ function createGroups(names) {
                             b.members.length
                     )[0];
 
-            smallest.members.push(name);
+
+            smallest.members.push(
+                name
+            );
+
 
             continue;
 
         }
 
-
-        /*
-           Cari ukuran terkecil.
-        */
 
         const minimum =
             Math.min(
@@ -584,11 +792,6 @@ function createGroups(names) {
             );
 
 
-        /*
-           Ambil semua kelompok yang memiliki
-           ukuran minimum.
-        */
-
         const candidates =
             availableGroups.filter(
                 group =>
@@ -596,11 +799,6 @@ function createGroups(names) {
                     minimum
             );
 
-
-        /*
-           Kalau ada beberapa kandidat,
-           pilih secara acak.
-        */
 
         const selected =
             candidates[
@@ -611,24 +809,27 @@ function createGroups(names) {
             ];
 
 
-        selected.members.push(name);
+        selected.members.push(
+            name
+        );
 
     }
 
 
     /*
-       Acak urutan anggota biasa di setiap kelompok.
-
-       Kelompok rahasia tetap satu kelompok,
-       tetapi urutan nama di dalamnya boleh acak.
+       Acak urutan nama di dalam kelompok.
     */
 
-    groups.forEach(group => {
+    groups.forEach(
+        group => {
 
-        group.members =
-            shuffle(group.members);
+            group.members =
+                shuffle(
+                    group.members
+                );
 
-    });
+        }
+    );
 
 
     return groups;
@@ -637,30 +838,39 @@ function createGroups(names) {
 
 
 /* =========================================================
-   ANIMASI NAMA
+   ROLLING NAME
 ========================================================= */
 
 
 function showRollingName(name) {
 
-    rollingNames.innerHTML = "";
+    rollingNames.innerHTML =
+        "";
+
 
     const element =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     element.className =
         "rolling-name";
 
+
     element.textContent =
         name;
 
-    rollingNames.appendChild(element);
+
+    rollingNames.appendChild(
+        element
+    );
 
 }
 
 
 /* =========================================================
-   ANIMASI ACAK NAMA
+   RANDOM NAME ANIMATION
 ========================================================= */
 
 
@@ -692,207 +902,40 @@ async function randomNameAnimation(
         );
 
 
-        const elapsed =
-            Date.now() - start;
-
-
         /*
-           Semakin mendekati akhir,
-           animasi sedikit melambat.
+           Sound setiap beberapa pergantian
+           supaya tidak terlalu berisik.
         */
 
+        if (
+            Math.random() > 0.45
+        ) {
+
+            playRollSound();
+
+        }
+
+
+        const elapsed =
+            Date.now() -
+            start;
+
+
         const progress =
-            elapsed / duration;
+            elapsed /
+            duration;
 
 
         const delay =
-            45 + (progress * 80);
+            45 +
+            progress * 80;
 
 
-        await sleep(delay);
+        await sleep(
+            delay
+        );
 
     }
-
-}
-
-
-/* =========================================================
-   BUAT KARTU KELOMPOK
-========================================================= */
-
-
-function createGroupCard(
-    group,
-    index,
-    selectedLeaders
-) {
-
-    const card =
-        document.createElement("div");
-
-    card.className =
-        "group-card";
-
-
-    /*
-       Delay animasi berdasarkan urutan
-       kelompok.
-    */
-
-    card.style.animationDelay =
-        `${index * 0.05}s`;
-
-
-    const header =
-        document.createElement("div");
-
-    header.className =
-        "group-header";
-
-
-    const title =
-        document.createElement("div");
-
-    title.className =
-        "group-title";
-
-
-    const number =
-        document.createElement("div");
-
-    number.className =
-        "group-number";
-
-    number.textContent =
-        group.number;
-
-
-    const name =
-        document.createElement("div");
-
-    name.className =
-        "group-name";
-
-    name.textContent =
-        `Tim ${group.number}`;
-
-
-    title.appendChild(number);
-
-    title.appendChild(name);
-
-
-    const total =
-        document.createElement("div");
-
-    total.className =
-        "member-total";
-
-    total.textContent =
-        `${group.members.length} anggota`;
-
-
-    header.appendChild(title);
-
-    header.appendChild(total);
-
-
-    const membersContainer =
-        document.createElement("div");
-
-    membersContainer.className =
-        "group-members";
-
-
-    group.members.forEach(
-        (member, memberIndex) => {
-
-            const item =
-                document.createElement("div");
-
-            item.className =
-                "member-item";
-
-
-            const memberName =
-                document.createElement("div");
-
-            memberName.className =
-                "member-name";
-
-
-            const indexCircle =
-                document.createElement("div");
-
-            indexCircle.className =
-                "member-index";
-
-            indexCircle.textContent =
-                memberIndex + 1;
-
-
-            const text =
-                document.createElement("div");
-
-            text.className =
-                "member-name-text";
-
-            text.textContent =
-                member;
-
-
-            memberName.appendChild(
-                indexCircle
-            );
-
-            memberName.appendChild(
-                text
-            );
-
-
-            item.appendChild(
-                memberName
-            );
-
-
-            /*
-               Cek apakah orang ini terpilih
-               sebagai perwakilan.
-            */
-
-            if (
-                selectedLeaders &&
-                selectedLeaders[group.number] &&
-                selectedLeaders[group.number]
-                    .includes(member)
-            ) {
-
-                const tag =
-                    document.createElement("span");
-
-                tag.className =
-                    "leader-tag";
-
-                tag.textContent =
-                    "Perwakilan";
-
-                item.appendChild(tag);
-
-            }
-
-
-            membersContainer.appendChild(item);
-
-        }
-    );
-
-
-    card.appendChild(header);
-
-    card.appendChild(membersContainer);
-
-
-    return card;
 
 }
 
@@ -904,10 +947,13 @@ function createGroupCard(
 
 function chooseLeaders(groups) {
 
-    const result = {};
+    const result =
+        {};
 
 
-    if (!leaderToggle.checked) {
+    if (
+        !leaderToggle.checked
+    ) {
 
         return result;
 
@@ -931,34 +977,28 @@ function chooseLeaders(groups) {
     }
 
 
-    groups.forEach(group => {
+    groups.forEach(
+        group => {
 
-        /*
-           Jumlah perwakilan tidak boleh
-           melebihi jumlah anggota.
-        */
-
-        const leaderAmount =
-            Math.min(
-                count,
-                group.members.length
-            );
+            const leaderAmount =
+                Math.min(
+                    count,
+                    group.members.length
+                );
 
 
-        /*
-           Acak anggota kelompok khusus untuk
-           memilih perwakilan.
-        */
+            result[
+                group.number
+            ] =
+                shuffle(
+                    group.members
+                ).slice(
+                    0,
+                    leaderAmount
+                );
 
-        result[group.number] =
-            shuffle(
-                group.members
-            ).slice(
-                0,
-                leaderAmount
-            );
-
-    });
+        }
+    );
 
 
     return result;
@@ -967,7 +1007,250 @@ function chooseLeaders(groups) {
 
 
 /* =========================================================
-   TAMPILKAN HASIL PERLAHAN
+   BUAT CARD KELOMPOK
+========================================================= */
+
+
+function createGroupCard(
+    group,
+    index,
+    selectedLeaders
+) {
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+
+    card.className =
+        "group-card";
+
+
+    card.style.animationDelay =
+        `${index * 0.05}s`;
+
+
+    const header =
+        document.createElement(
+            "div"
+        );
+
+
+    header.className =
+        "group-header";
+
+
+    const title =
+        document.createElement(
+            "div"
+        );
+
+
+    title.className =
+        "group-title";
+
+
+    const number =
+        document.createElement(
+            "div"
+        );
+
+
+    number.className =
+        "group-number";
+
+
+    number.textContent =
+        group.number;
+
+
+    const name =
+        document.createElement(
+            "div"
+        );
+
+
+    name.className =
+        "group-name";
+
+
+    name.textContent =
+        `Tim ${group.number}`;
+
+
+    title.appendChild(
+        number
+    );
+
+
+    title.appendChild(
+        name
+    );
+
+
+    const total =
+        document.createElement(
+            "div"
+        );
+
+
+    total.className =
+        "member-total";
+
+
+    total.textContent =
+        `${group.members.length} anggota`;
+
+
+    header.appendChild(
+        title
+    );
+
+
+    header.appendChild(
+        total
+    );
+
+
+    const membersContainer =
+        document.createElement(
+            "div"
+        );
+
+
+    membersContainer.className =
+        "group-members";
+
+
+    group.members.forEach(
+        (member, memberIndex) => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "member-item";
+
+
+            const memberName =
+                document.createElement(
+                    "div"
+                );
+
+
+            memberName.className =
+                "member-name";
+
+
+            const indexCircle =
+                document.createElement(
+                    "div"
+                );
+
+
+            indexCircle.className =
+                "member-index";
+
+
+            indexCircle.textContent =
+                memberIndex + 1;
+
+
+            const text =
+                document.createElement(
+                    "div"
+                );
+
+
+            text.className =
+                "member-name-text";
+
+
+            text.textContent =
+                member;
+
+
+            memberName.appendChild(
+                indexCircle
+            );
+
+
+            memberName.appendChild(
+                text
+            );
+
+
+            item.appendChild(
+                memberName
+            );
+
+
+            /*
+               Tandai perwakilan.
+            */
+
+            if (
+                selectedLeaders &&
+                selectedLeaders[
+                    group.number
+                ] &&
+                selectedLeaders[
+                    group.number
+                ].includes(
+                    member
+                )
+            ) {
+
+                const tag =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                tag.className =
+                    "leader-tag";
+
+
+                tag.textContent =
+                    "Perwakilan";
+
+
+                item.appendChild(
+                    tag
+                );
+
+            }
+
+
+            membersContainer.appendChild(
+                item
+            );
+
+        }
+    );
+
+
+    card.appendChild(
+        header
+    );
+
+
+    card.appendChild(
+        membersContainer
+    );
+
+
+    return card;
+
+}
+
+
+/* =========================================================
+   REVEAL KELOMPOK
 ========================================================= */
 
 
@@ -976,9 +1259,13 @@ async function revealGroups(
     selectedLeaders
 ) {
 
-    groupsContainer.innerHTML = "";
+    groupsContainer.innerHTML =
+        "";
 
-    emptyResult.style.display = "none";
+
+    emptyResult.style.display =
+        "none";
+
 
     groupsContainer.style.display =
         "grid";
@@ -995,7 +1282,7 @@ async function revealGroups(
 
 
         /*
-           Update status animasi.
+           Update tulisan.
         */
 
         spinStage.textContent =
@@ -1007,7 +1294,14 @@ async function revealGroups(
 
 
         /*
-           Nama tetap bergerak beberapa saat.
+           Sound transisi.
+        */
+
+        playTeamSound();
+
+
+        /*
+           Nama terus berputar.
         */
 
         await randomNameAnimation(
@@ -1017,8 +1311,7 @@ async function revealGroups(
 
 
         /*
-           Setelah selesai,
-           tampilkan nama asli kelompok.
+           Tampilkan nama tim.
         */
 
         showRollingName(
@@ -1026,11 +1319,13 @@ async function revealGroups(
         );
 
 
-        await sleep(350);
+        await sleep(
+            350
+        );
 
 
         /*
-           Masukkan kartu ke halaman hasil.
+           Tampilkan card.
         */
 
         const card =
@@ -1047,27 +1342,25 @@ async function revealGroups(
 
 
         /*
-           Scroll otomatis sedikit
-           ketika banyak kelompok.
+           Progress.
         */
 
-        const resultCard =
-            document.querySelector(
-                ".result-card"
-            );
+        const progress =
+            25 +
+            (
+                (i + 1) /
+                groups.length
+            ) *
+            70;
 
 
-        if (resultCard) {
-
-            resultCard.scrollIntoView({
-                behavior: "smooth",
-                block: "nearest"
-            });
-
-        }
+        loadingProgress.style.width =
+            `${progress}%`;
 
 
-        await sleep(350);
+        await sleep(
+            350
+        );
 
     }
 
@@ -1085,7 +1378,9 @@ async function playSpinAnimation(
     selectedLeaders
 ) {
 
-    spinOverlay.classList.add("active");
+    spinOverlay.classList.add(
+        "active"
+    );
 
 
     spinStage.textContent =
@@ -1101,8 +1396,19 @@ async function playSpinAnimation(
 
 
     /*
+       Suara awal.
+    */
+
+    playClickSound();
+
+
+    await sleep(
+        150
+    );
+
+
+    /*
        FASE 1
-       Acak semua nama.
     */
 
     await randomNameAnimation(
@@ -1115,12 +1421,13 @@ async function playSpinAnimation(
         "25%";
 
 
-    await sleep(300);
+    await sleep(
+        300
+    );
 
 
     /*
        FASE 2
-       Tentukan kelompok satu per satu.
     */
 
     await revealGroups(
@@ -1134,7 +1441,7 @@ async function playSpinAnimation(
 
 
     /*
-       Selesai.
+       SELESAI
     */
 
     spinStage.textContent =
@@ -1150,7 +1457,16 @@ async function playSpinAnimation(
     );
 
 
-    await sleep(1000);
+    /*
+       Sound kemenangan.
+    */
+
+    playCompleteSound();
+
+
+    await sleep(
+        1100
+    );
 
 
     spinOverlay.classList.remove(
@@ -1158,6 +1474,276 @@ async function playSpinAnimation(
     );
 
 }
+
+
+/* =========================================================
+   FORMAT HASIL
+========================================================= */
+
+
+function generateResultText() {
+
+    const cards =
+        groupsContainer.querySelectorAll(
+            ".group-card"
+        );
+
+
+    if (
+        cards.length === 0
+    ) {
+
+        return "";
+
+    }
+
+
+    let text =
+        "HASIL PEMBAGIAN KELOMPOK\n";
+
+
+    text +=
+        "================================\n\n";
+
+
+    cards.forEach(
+        card => {
+
+            const groupName =
+                card.querySelector(
+                    ".group-name"
+                ).textContent;
+
+
+            const members =
+                card.querySelectorAll(
+                    ".member-item"
+                );
+
+
+            text +=
+                `${groupName}\n`;
+
+
+            text +=
+                "----------------------------\n";
+
+
+            members.forEach(
+                (member, index) => {
+
+                    const name =
+                        member.querySelector(
+                            ".member-name-text"
+                        ).textContent;
+
+
+                    const leader =
+                        member.querySelector(
+                            ".leader-tag"
+                        );
+
+
+                    text +=
+                        `${index + 1}. ${name}`;
+
+
+                    if (leader) {
+
+                        text +=
+                            " [Perwakilan]";
+
+                    }
+
+
+                    text +=
+                        "\n";
+
+                }
+            );
+
+
+            text +=
+                "\n";
+
+        }
+    );
+
+
+    return text;
+
+}
+
+
+/* =========================================================
+   SALIN HASIL
+========================================================= */
+
+
+copyButton.addEventListener(
+    "click",
+    async () => {
+
+        const text =
+            generateResultText();
+
+
+        if (!text) {
+
+            return;
+
+        }
+
+
+        playClickSound();
+
+
+        try {
+
+            await navigator.clipboard.writeText(
+                text
+            );
+
+
+        } catch (error) {
+
+            /*
+               Fallback browser lama.
+            */
+
+            const textarea =
+                document.createElement(
+                    "textarea"
+                );
+
+
+            textarea.value =
+                text;
+
+
+            document.body.appendChild(
+                textarea
+            );
+
+
+            textarea.select();
+
+
+            document.execCommand(
+                "copy"
+            );
+
+
+            textarea.remove();
+
+        }
+
+
+        const oldText =
+            copyButton.textContent;
+
+
+        copyButton.textContent =
+            "✓ Berhasil Disalin";
+
+
+        setTimeout(
+            () => {
+
+                copyButton.textContent =
+                    oldText;
+
+            },
+            1500
+        );
+
+    }
+);
+
+
+/* =========================================================
+   DOWNLOAD HASIL
+========================================================= */
+
+
+exportButton.addEventListener(
+    "click",
+    () => {
+
+        const text =
+            generateResultText();
+
+
+        if (!text) {
+
+            return;
+
+        }
+
+
+        playClickSound();
+
+
+        const blob =
+            new Blob(
+                [text],
+                {
+                    type:
+                        "text/plain;charset=utf-8"
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.href =
+            url;
+
+
+        const date =
+            new Date();
+
+
+        const filename =
+            `Hasil_Pembagian_Kelompok_${date
+                .getFullYear()}-${String(
+                    date.getMonth() + 1
+                ).padStart(2, "0")}-${String(
+                    date.getDate()
+                ).padStart(2, "0")}.txt`;
+
+
+        link.download =
+            filename;
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+
+        link.remove();
+
+
+        URL.revokeObjectURL(
+            url
+        );
+
+    }
+);
 
 
 /* =========================================================
@@ -1174,10 +1760,16 @@ spinButton.addEventListener(
 
 
         /*
-           Validasi jumlah anggota.
+           Inisialisasi audio SEBELUM
+           proses async agar browser mengizinkan suara.
         */
 
-        if (names.length < 2) {
+        initAudio();
+
+
+        if (
+            names.length < 2
+        ) {
 
             alert(
                 "Masukkan minimal 2 anggota."
@@ -1194,7 +1786,9 @@ spinButton.addEventListener(
             );
 
 
-        if (groupCount < 1) {
+        if (
+            groupCount < 1
+        ) {
 
             alert(
                 "Jumlah tim tidak valid."
@@ -1206,51 +1800,13 @@ spinButton.addEventListener(
 
 
         /*
-           Cek apakah kelompok rahasia
-           membutuhkan nomor tim yang belum ada.
-        */
-
-        const hiddenGroupNumbers =
-            Object.keys(
-                HIDDEN_GROUPS
-            ).map(Number);
-
-
-        const impossibleGroups =
-            hiddenGroupNumbers.filter(
-                number =>
-                    number > groupCount
-            );
-
-
-        /*
-           Jika misalnya user membuat hanya
-           5 kelompok, kelompok rahasia 6 dan 8
-           tidak dapat digunakan.
-
-           Kita tidak menghentikan proses.
-           Sistem tetap membagi anggota secara normal.
-        */
-
-
-        if (
-            impossibleGroups.length > 0
-        ) {
-
-            console.warn(
-                "Beberapa kelompok rahasia berada di luar jumlah tim:",
-                impossibleGroups
-            );
-
-        }
-
-
-        /*
            Buat kelompok.
         */
 
         const groups =
-            createGroups(names);
+            createGroups(
+                names
+            );
 
 
         if (
@@ -1268,24 +1824,33 @@ spinButton.addEventListener(
 
 
         /*
-           Pilih perwakilan secara acak.
+           Pilih perwakilan.
         */
 
         const selectedLeaders =
-            chooseLeaders(groups);
+            chooseLeaders(
+                groups
+            );
 
 
         /*
-           Nonaktifkan tombol selama proses.
+           Matikan kontrol.
         */
 
-        spinButton.disabled = true;
+        spinButton.disabled =
+            true;
 
-        resetButton.disabled = true;
 
-        amountInput.disabled = true;
+        resetButton.disabled =
+            true;
 
-        memberInput.disabled = true;
+
+        amountInput.disabled =
+            true;
+
+
+        memberInput.disabled =
+            true;
 
 
         document
@@ -1294,24 +1859,30 @@ spinButton.addEventListener(
             )
             .forEach(
                 radio =>
-                    radio.disabled = true
+                    radio.disabled =
+                        true
             );
 
 
-        leaderToggle.disabled = true;
+        leaderToggle.disabled =
+            true;
 
-        leaderCount.disabled = true;
+
+        leaderCount.disabled =
+            true;
 
 
         /*
-           Update status.
+           Status.
         */
 
         statusBadge.textContent =
             "Mengacak...";
 
+
         statusBadge.style.background =
             "#eef2ff";
+
 
         statusBadge.style.color =
             "#4f46e5";
@@ -1321,11 +1892,16 @@ spinButton.addEventListener(
             "Pembagian sedang diproses";
 
 
-        groupsContainer.innerHTML = "";
+        groupsContainer.innerHTML =
+            "";
+
+
+        exportActions.style.display =
+            "none";
 
 
         /*
-           Jalankan animasi.
+           Jalankan.
         */
 
         await playSpinAnimation(
@@ -1336,14 +1912,24 @@ spinButton.addEventListener(
 
 
         /*
-           Status akhir.
+           Tombol export muncul.
+        */
+
+        exportActions.style.display =
+            "grid";
+
+
+        /*
+           Status selesai.
         */
 
         statusBadge.textContent =
             "Selesai";
 
+
         statusBadge.style.background =
             "#dcfce7";
+
 
         statusBadge.style.color =
             "#166534";
@@ -1354,16 +1940,23 @@ spinButton.addEventListener(
 
 
         /*
-           Aktifkan kembali tombol.
+           Aktifkan kembali kontrol.
         */
 
-        spinButton.disabled = false;
+        spinButton.disabled =
+            false;
 
-        resetButton.disabled = false;
 
-        amountInput.disabled = false;
+        resetButton.disabled =
+            false;
 
-        memberInput.disabled = false;
+
+        amountInput.disabled =
+            false;
+
+
+        memberInput.disabled =
+            false;
 
 
         document
@@ -1372,13 +1965,17 @@ spinButton.addEventListener(
             )
             .forEach(
                 radio =>
-                    radio.disabled = false
+                    radio.disabled =
+                        false
             );
 
 
-        leaderToggle.disabled = false;
+        leaderToggle.disabled =
+            false;
 
-        leaderCount.disabled = false;
+
+        leaderCount.disabled =
+            false;
 
     }
 );
@@ -1393,12 +1990,24 @@ resetButton.addEventListener(
     "click",
     () => {
 
-        memberInput.value = "";
+        playClickSound();
 
-        groupsContainer.innerHTML = "";
+
+        memberInput.value =
+            "";
+
+
+        groupsContainer.innerHTML =
+            "";
+
 
         groupsContainer.style.display =
             "none";
+
+
+        exportActions.style.display =
+            "none";
+
 
         emptyResult.style.display =
             "flex";
@@ -1452,7 +2061,7 @@ resetButton.addEventListener(
 
 
 /* =========================================================
-   INITIAL STATE
+   INITIAL
 ========================================================= */
 
 
