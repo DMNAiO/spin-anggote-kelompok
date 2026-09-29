@@ -11,29 +11,47 @@
 
 <body>
 
+    <!-- =========================
+         HEADER
+    ========================== -->
+
     <header class="top-header">
-        <div class="header-icon">👥</div>
+
+        <div class="header-icon">
+            👥
+        </div>
 
         <div>
             <h1>Pembagian Tim & Penentuan Ketua</h1>
-            <p>Acak anggota dan tentukan perwakilan secara otomatis</p>
+
+            <p>
+                Acak anggota dan tentukan perwakilan secara otomatis
+            </p>
         </div>
+
     </header>
 
+
+    <!-- =========================
+         MAIN
+    ========================== -->
 
     <main class="container">
 
         <!-- =========================
-             PANEL INPUT
+             INPUT
         ========================== -->
 
         <section class="card input-card">
 
             <div class="card-title">
-                <div>
-                    <h2>Data Anggota</h2>
-                    <p>Masukkan satu nama pada setiap baris</p>
-                </div>
+
+                <h2>Data Anggota</h2>
+
+                <p>
+                    Masukkan satu nama pada setiap baris
+                </p>
+
             </div>
 
 
@@ -49,9 +67,13 @@ Eka Saputra"
 
 
             <div class="member-info">
-                <span id="memberCount">0 anggota</span>
+                <span id="memberCount">
+                    0 anggota
+                </span>
             </div>
 
+
+            <!-- PEMBAGIAN -->
 
             <div class="section-label">
                 Pembagian Tim
@@ -61,6 +83,7 @@ Eka Saputra"
             <div class="distribution-options">
 
                 <label class="radio-option">
+
                     <input
                         type="radio"
                         name="distributionMode"
@@ -69,13 +92,22 @@ Eka Saputra"
                     >
 
                     <span>
-                        <strong>Jumlah tim</strong>
-                        <small>Tentukan jumlah kelompok</small>
+
+                        <strong>
+                            Jumlah tim
+                        </strong>
+
+                        <small>
+                            Tentukan jumlah kelompok
+                        </small>
+
                     </span>
+
                 </label>
 
 
                 <label class="radio-option">
+
                     <input
                         type="radio"
                         name="distributionMode"
@@ -83,9 +115,17 @@ Eka Saputra"
                     >
 
                     <span>
-                        <strong>Anggota per tim</strong>
-                        <small>Tentukan jumlah anggota</small>
+
+                        <strong>
+                            Anggota per tim
+                        </strong>
+
+                        <small>
+                            Tentukan jumlah anggota
+                        </small>
+
                     </span>
+
                 </label>
 
             </div>
@@ -107,20 +147,27 @@ Eka Saputra"
             </div>
 
 
-            <!-- =========================
-                 LEADER
-            ========================== -->
+            <!-- PERWAKILAN -->
 
             <div class="leader-box">
 
                 <div class="leader-header">
 
                     <div>
-                        <strong>Penentuan Perwakilan</strong>
-                        <p>Secara otomatis dipilih dari setiap tim</p>
+
+                        <strong>
+                            Penentuan Perwakilan
+                        </strong>
+
+                        <p>
+                            Dipilih secara otomatis dari setiap tim
+                        </p>
+
                     </div>
 
+
                     <label class="switch">
+
                         <input
                             type="checkbox"
                             id="leaderToggle"
@@ -128,6 +175,7 @@ Eka Saputra"
                         >
 
                         <span class="slider"></span>
+
                     </label>
 
                 </div>
@@ -154,15 +202,23 @@ Eka Saputra"
             </div>
 
 
+            <!-- INFO -->
+
             <div class="info-box">
-                <span>💡</span>
+
+                <span>
+                    💡
+                </span>
 
                 <p>
                     Sistem akan mengacak seluruh anggota secara otomatis
                     dan membagi mereka ke dalam kelompok secara seimbang.
                 </p>
+
             </div>
 
+
+            <!-- BUTTON -->
 
             <div class="button-row">
 
@@ -187,7 +243,7 @@ Eka Saputra"
 
 
         <!-- =========================
-             PANEL HASIL
+             HASIL
         ========================== -->
 
         <section class="card result-card">
@@ -195,11 +251,15 @@ Eka Saputra"
             <div class="result-header">
 
                 <div>
-                    <h2>Hasil Pembagian</h2>
+
+                    <h2>
+                        Hasil Pembagian
+                    </h2>
 
                     <p id="resultStatus">
                         Belum ada pembagian
                     </p>
+
                 </div>
 
 
@@ -213,6 +273,8 @@ Eka Saputra"
             </div>
 
 
+            <!-- HASIL KOSONG -->
+
             <div
                 id="emptyResult"
                 class="empty-result"
@@ -222,7 +284,9 @@ Eka Saputra"
                     🎲
                 </div>
 
-                <h3>Belum Ada Hasil</h3>
+                <h3>
+                    Belum Ada Hasil
+                </h3>
 
                 <p>
                     Masukkan daftar anggota kemudian tekan
@@ -232,10 +296,38 @@ Eka Saputra"
             </div>
 
 
+            <!-- CONTAINER KELOMPOK -->
+
             <div
                 id="groupsContainer"
                 class="groups-container"
             ></div>
+
+
+            <!-- EXPORT -->
+
+            <div
+                id="exportActions"
+                class="export-actions"
+                style="display: none;"
+            >
+
+                <button
+                    id="copyButton"
+                    class="export-btn copy-btn"
+                >
+                    📋 Salin Hasil
+                </button>
+
+
+                <button
+                    id="exportButton"
+                    class="export-btn download-btn"
+                >
+                    📥 Ekspor Hasil
+                </button>
+
+            </div>
 
         </section>
 
@@ -275,10 +367,12 @@ Eka Saputra"
 
 
             <div class="loading-bar">
+
                 <div
                     id="loadingProgress"
                     class="loading-progress"
                 ></div>
+
             </div>
 
 
