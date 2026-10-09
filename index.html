@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pembagian Tim & Penentuan Ketua</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header class="top-header">
+
+        <div class="header-icon">
+            👥
+        </div>
+
+        <div>
+            <h1>Pembagian Tim & Penentuan Ketua</h1>
+
+            <p>
+                Acak anggota dan tentukan perwakilan secara otomatis
+            </p>
+        </div>
+
+        <div class="auth-panel">
+
+            <div id="authLoggedOut">
+
+                <p>
+                    Masuk untuk memakai live chat
+                </p>
+
+                <button
+                    id="googleLoginButton"
+                    class="google-login-button"
+                    type="button"
+                >
+                    <span aria-hidden="true">G</span>
+                    Masuk dengan Google
+                </button>
+
+            </div>
+
+
+            <div
+                id="authLoggedIn"
+                class="auth-logged-in"
+                style="display: none;"
+            >
+
+                <img
+                    id="authAvatar"
+                    class="auth-avatar"
+                    alt=""
+                >
+
+                <div class="auth-user-copy">
+
+                    <strong id="authName">
+                        Pengguna
+                    </strong>
+
+                    <small id="authEmail"></small>
+
+                </div>
+
+                <button
+                    id="logoutButton"
+                    class="logout-button"
+                    type="button"
+                >
+                    Keluar
+                </button>
+
+            </div>
+
+            <small
+                id="authStatus"
+                class="auth-status"
+                role="status"
+            >
+                Menyiapkan login...
+            </small>
+
+        </div>
+    </header>
+
+
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="container">
+
+        <!-- =========================
+             INPUT
+        ========================== -->
+
+        <section class="card input-card">
+
+            <div class="card-title">
+
+                <h2>Data Anggota</h2>
+
+                <p>
+                    Masukkan satu nama pada setiap baris
+                </p>
+
+            </div>
+
+
+            <textarea
+                id="memberInput"
+                placeholder="Contoh:
+Andi Heru Nugraha
+Budi Santoso
+Citra Rahmatina
+Dina Putri
+Eka Saputra"
+            ></textarea>
+
+
+            <div class="member-info">
+                <span id="memberCount">
+                    0 anggota
+                </span>
+            </div>
+
+
+            <!-- PEMBAGIAN -->
+
+            <div class="section-label">
+                Pembagian Tim
+            </div>
+
+
+            <div class="distribution-options">
+
+                <label class="radio-option">
+
+                    <input
+                        type="radio"
+                        name="distributionMode"
+                        value="groups"
+                        checked
+                    >
+
+                    <span>
+
+                        <strong>
+                            Jumlah tim
+                        </strong>
+
+                        <small>
+                            Tentukan jumlah kelompok
+                        </small>
+
+                    </span>
+
+                </label>
+
+
+                <label class="radio-option">
+
+                    <input
+                        type="radio"
+                        name="distributionMode"
+                        value="members"
+                    >
+
+                    <span>
+
+                        <strong>
+                            Anggota per tim
+                        </strong>
+
+                        <small>
+                            Tentukan jumlah anggota
+                        </small>
+
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label id="amountLabel">
+                    Jumlah tim
+                </label>
+
+                <input
+                    type="number"
+                    id="amountInput"
+                    value="10"
+                    min="1"
+                >
+
+            </div>
+
+
+            <!-- PERWAKILAN -->
+
+            <div class="leader-box">
+
+                <div class="leader-header">
+
+                    <div>
+
+                        <strong>
+                            Penentuan Perwakilan
+                        </strong>
+
+                        <p>
+                            Dipilih secara otomatis dari setiap tim
+                        </p>
+
+                    </div>
+
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="leaderToggle"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+
+                <div
+                    class="leader-count-wrapper"
+                    id="leaderCountWrapper"
+                >
+
+                    <label>
+                        Jumlah perwakilan tiap tim
+                    </label>
+
+                    <input
+                        type="number"
+                        id="leaderCount"
+                        value="1"
+                        min="1"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- INFO -->
+
+            <div class="info-box">
+
+                <span>
+                    💡
+                </span>
+
+                <p>
+                    Sistem akan mengacak seluruh anggota secara otomatis
+                    dan membagi mereka ke dalam kelompok secara seimbang.
+                </p>
+
+            </div>
+
+
+            <!-- BUTTON -->
+
+            <div class="button-row">
+
+                <button
+                    id="resetButton"
+                    class="btn btn-secondary"
+                >
+                    ↻ Reset
+                </button>
+
+
+                <button
+                    id="spinButton"
+                    class="btn btn-primary"
+                >
+                    ▶ Jalankan
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             HASIL
+        ========================== -->
+
+        <section class="card result-card">
+
+            <div class="result-header">
+
+                <div>
+
+                    <h2>
+                        Hasil Pembagian
+                    </h2>
+
+                    <p id="resultStatus">
+                        Belum ada pembagian
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="status-badge"
+                    id="statusBadge"
+                >
+                    Menunggu
+                </div>
+
+            </div>
+
+
+            <!-- HASIL KOSONG -->
+
+            <div
+                id="emptyResult"
+                class="empty-result"
+            >
+
+                <div class="empty-icon">
+                    🎲
+                </div>
+
+                <h3>
+                    Belum Ada Hasil
+                </h3>
+
+                <p>
+                    Masukkan daftar anggota kemudian tekan
+                    tombol Jalankan.
+                </p>
+
+            </div>
+
+
+            <!-- CONTAINER KELOMPOK -->
+
+            <div
+                id="groupsContainer"
+                class="groups-container"
+            ></div>
+
+
+            <!-- EXPORT -->
+
+            <div
+                id="exportActions"
+                class="export-actions"
+                style="display: none;"
+            >
+
+                <button
+                    id="copyButton"
+                    class="export-btn copy-btn"
+                >
+                    📋 Salin Hasil
+                </button>
+
+
+                <button
+                    id="exportButton"
+                    class="export-btn download-btn"
+                >
+                    📥 Ekspor Hasil
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             LIVE CHAT
+        ========================== -->
+
+        <section class="card chat-card">
+
+            <div class="chat-header">
+
+                <div>
+
+                    <h2>Live Chat</h2>
+
+                    <p>
+                        Kirim pesan pribadi ke anggota lain secara realtime
+                    </p>
+
+                </div>
+
+                <span
+                    id="chatConnectionStatus"
+                    class="chat-connection-status"
+                >
+                    Login diperlukan
+                </span>
+
+            </div>
+
+            <div
+                id="chatSignedOut"
+                class="chat-signed-out"
+            >
+
+                <div class="chat-empty-icon">💬</div>
+
+                <h3>Masuk untuk mulai chat</h3>
+
+                <p>
+                    Gunakan akun Gmail pribadi agar nama dan pesanmu tersimpan aman.
+                </p>
+
+            </div>
+
+            <div
+                id="chatWorkspace"
+                class="chat-workspace"
+                style="display: none;"
+            >
+
+                <aside class="chat-people">
+
+                    <div class="chat-people-header">
+
+                        <h3>Anggota</h3>
+
+                        <span id="chatUserCount">0</span>
+
+                    </div>
+
+                    <div
+                        id="chatUsers"
+                        class="chat-users"
+                    >
+
+                        <p class="chat-placeholder">
+                            Memuat daftar anggota...
+                        </p>
+
+                    </div>
+
+                </aside>
+
+                <section class="chat-conversation">
+
+                    <div
+                        id="chatConversationHeader"
+                        class="chat-conversation-header"
+                    >
+                        Pilih anggota untuk mulai chat
+                    </div>
+
+                    <div
+                        id="chatMessages"
+                        class="chat-messages"
+                        aria-live="polite"
+                    >
+
+                        <p class="chat-placeholder">
+                            Pilih anggota di sebelah kiri.
+                        </p>
+
+                    </div>
+
+                    <form
+                        id="chatForm"
+                        class="chat-form"
+                    >
+
+                        <input
+                            id="chatInput"
+                            type="text"
+                            maxlength="2000"
+                            autocomplete="off"
+                            placeholder="Tulis pesan..."
+                            disabled
+                        >
+
+                        <button
+                            id="chatSendButton"
+                            class="btn btn-primary"
+                            type="submit"
+                            disabled
+                        >
+                            Kirim
+                        </button>
+
+                    </form>
+
+                </section>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         SPIN OVERLAY
+    ========================== -->
+
+    <div
+        id="spinOverlay"
+        class="spin-overlay"
+    >
+
+        <div class="spin-modal">
+
+            <div class="spin-icon">
+                🎲
+            </div>
+
+
+            <div
+                id="spinStage"
+                class="spin-stage"
+            >
+                MENGACAK SEMUA ANGGOTA...
+            </div>
+
+
+            <div
+                id="rollingNames"
+                class="rolling-names"
+            >
+                Nama
+            </div>
+
+
+            <div class="loading-bar">
+
+                <div
+                    id="loadingProgress"
+                    class="loading-progress"
+                ></div>
+
+            </div>
+
+
+            <div
+                id="spinSubtext"
+                class="spin-subtext"
+            >
+                Harap tunggu...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>
